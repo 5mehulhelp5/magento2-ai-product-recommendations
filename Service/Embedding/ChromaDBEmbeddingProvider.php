@@ -23,14 +23,12 @@ use Psr\Log\LoggerInterface;
  * ChromaDB embedding provider using a separate embedding service
  *
  * IMPORTANT: ChromaDB's REST API does NOT support query_texts without a
- * server-side embedding function. You must either:
- * 
- * 1. Use this provider with the embedding-service container (recommended)
- * 2. Switch to 'ollama' provider with a local Ollama instance
- * 3. Switch to 'openai' provider with an API key
+ * server-side embedding function. This provider requires the embedding-service
+ * container to be running.
  *
  * The embedding-service is a lightweight Python service included in the
- * docker/ folder that uses sentence-transformers to generate embeddings.
+ * docker/ folder that uses sentence-transformers (all-MiniLM-L6-v2 model)
+ * to generate embeddings with 384 dimensions.
  */
 class ChromaDBEmbeddingProvider implements EmbeddingProviderInterface
 {

@@ -8,10 +8,10 @@ This is a Magento 2 module (`Navindbhudiya_ProductRecommendation`) that provides
 
 - **Platform**: Magento 2.4.x (Community Edition)
 - **PHP**: 8.1+
-- **Vector Database**: ChromaDB
+- **Vector Database**: ChromaDB v0.4.24
 - **Embedding Service**: Python + sentence-transformers (all-MiniLM-L6-v2)
 - **Local Development**: Warden (Docker-based)
-- **Embedding Providers**: ChromaDB (with embedding-service), OpenAI, Ollama
+- **Embedding Model**: all-MiniLM-L6-v2 (384 dimensions)
 
 ## CRITICAL: Embedding Service Requirement
 
@@ -96,7 +96,7 @@ version: "3.5"
 services:
   chromadb:
     container_name: ${WARDEN_ENV_NAME}_chromadb
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.4.24
     restart: unless-stopped
     environment:
       - IS_PERSISTENT=TRUE
@@ -200,7 +200,7 @@ tail -f var/log/product_recommendation.log
 
 The embedding service processes texts sequentially. For large catalogs:
 - Run indexing during off-peak hours
-- Consider using OpenAI or Ollama for faster processing
+- Use the indexer during maintenance windows
 
 ## Key Configuration
 
@@ -215,21 +215,14 @@ product_recommendation/chromadb/port          # default: 8000
 product_recommendation/embedding/provider     # default: chromadb
 ```
 
-### For Different Embedding Providers
+### Embedding Configuration
 
-**ChromaDB (default)** - Requires embedding-service container
-- Host: `chromadb`
-- Embedding service automatically detected at `embedding-service:8001`
-
-**OpenAI** - Faster, costs money
-- Set provider to `openai`
-- Add API key in admin
-
-**Ollama** - Local AI, no cost
-- Add Ollama to docker-compose
-- Set provider to `ollama`
-- Host: `http://ollama:11434`
-- Model: `nomic-embed-text`
+**ChromaDB with embedding-service** (Only supported provider)
+- Host: `chromadb` (default)
+- Port: `8000` (default)
+- Embedding service: `embedding-service:8001` (automatically detected)
+- Model: all-MiniLM-L6-v2 (384 dimensions)
+- Collection: `magento_products` (configurable)
 
 ## How It Works
 

@@ -84,47 +84,7 @@
                        showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Embedding Provider</label>
                     <source_model>Navindbhudiya\ProductRecommendation\Model\Config\Source\EmbeddingProvider</source_model>
-                    <comment>Select the embedding provider for generating product vectors</comment>
-                </field>
-
-                <!-- OpenAI Settings -->
-                <field id="openai_api_key" translate="label comment" type="obscure" sortOrder="20"
-                       showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>OpenAI API Key</label>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <comment>Your OpenAI API key for generating embeddings</comment>
-                    <depends>
-                        <field id="provider">openai</field>
-                    </depends>
-                </field>
-
-                <field id="openai_model" translate="label comment" type="select" sortOrder="25"
-                       showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>OpenAI Model</label>
-                    <source_model>Navindbhudiya\ProductRecommendation\Model\Config\Source\OpenAIModel</source_model>
-                    <comment>Select the OpenAI embedding model</comment>
-                    <depends>
-                        <field id="provider">openai</field>
-                    </depends>
-                </field>
-
-                <!-- Ollama Settings -->
-                <field id="ollama_host" translate="label comment" type="text" sortOrder="30"
-                       showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Ollama Host</label>
-                    <comment>Ollama server URL (e.g., http://ollama:11434)</comment>
-                    <depends>
-                        <field id="provider">ollama</field>
-                    </depends>
-                </field>
-
-                <field id="ollama_model" translate="label comment" type="text" sortOrder="35"
-                       showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Ollama Model</label>
-                    <comment>Ollama embedding model (e.g., nomic-embed-text, mxbai-embed-large)</comment>
-                    <depends>
-                        <field id="provider">ollama</field>
-                    </depends>
+                    <comment>Embedding provider: ChromaDB with all-MiniLM-L6-v2 model (384 dimensions)</comment>
                 </field>
 
                 <!-- Product Attributes for Embedding -->

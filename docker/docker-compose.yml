@@ -15,7 +15,7 @@ version: "3.8"
 services:
   # ChromaDB - Vector Database
   chromadb:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.4.24
     container_name: chromadb
     restart: unless-stopped
     ports:

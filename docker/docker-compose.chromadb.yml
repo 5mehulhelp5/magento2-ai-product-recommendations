@@ -5,7 +5,7 @@ version: "3.8"
 
 services:
   chromadb:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.4.24
     container_name: ${WARDEN_ENV_NAME}_chromadb
     restart: unless-stopped
     ports:

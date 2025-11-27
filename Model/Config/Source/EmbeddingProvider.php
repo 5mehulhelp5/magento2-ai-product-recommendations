@@ -27,15 +27,7 @@ class EmbeddingProvider implements OptionSourceInterface
         return [
             [
                 'value' => 'chromadb',
-                'label' => __('ChromaDB (Default - all-MiniLM-L6-v2)')
-            ],
-            [
-                'value' => 'openai',
-                'label' => __('OpenAI')
-            ],
-            [
-                'value' => 'ollama',
-                'label' => __('Ollama (Local AI)')
+                'label' => __('ChromaDB (all-MiniLM-L6-v2)')
             ],
         ];
     }

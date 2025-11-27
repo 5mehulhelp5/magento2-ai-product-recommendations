@@ -30,10 +30,6 @@ class Config extends AbstractHelper
     private const XML_PATH_CHROMADB_COLLECTION = 'product_recommendation/chromadb/collection_name';
 
     private const XML_PATH_EMBEDDING_PROVIDER = 'product_recommendation/embedding/provider';
-    private const XML_PATH_EMBEDDING_OPENAI_KEY = 'product_recommendation/embedding/openai_api_key';
-    private const XML_PATH_EMBEDDING_OPENAI_MODEL = 'product_recommendation/embedding/openai_model';
-    private const XML_PATH_EMBEDDING_OLLAMA_HOST = 'product_recommendation/embedding/ollama_host';
-    private const XML_PATH_EMBEDDING_OLLAMA_MODEL = 'product_recommendation/embedding/ollama_model';
     private const XML_PATH_EMBEDDING_ATTRIBUTES = 'product_recommendation/embedding/product_attributes';
     private const XML_PATH_EMBEDDING_CATEGORIES = 'product_recommendation/embedding/include_categories';
 
@@ -141,47 +137,6 @@ class Config extends AbstractHelper
     public function getEmbeddingProvider(): string
     {
         return (string) $this->scopeConfig->getValue(self::XML_PATH_EMBEDDING_PROVIDER) ?: 'chromadb';
-    }
-
-    /**
-     * Get OpenAI API key
-     *
-     * @return string
-     */
-    public function getOpenAiApiKey(): string
-    {
-        $encrypted = $this->scopeConfig->getValue(self::XML_PATH_EMBEDDING_OPENAI_KEY);
-        return $encrypted ? $this->encryptor->decrypt($encrypted) : '';
-    }
-
-    /**
-     * Get OpenAI model
-     *
-     * @return string
-     */
-    public function getOpenAiModel(): string
-    {
-        return (string) $this->scopeConfig->getValue(self::XML_PATH_EMBEDDING_OPENAI_MODEL) ?: 'text-embedding-3-small';
-    }
-
-    /**
-     * Get Ollama host
-     *
-     * @return string
-     */
-    public function getOllamaHost(): string
-    {
-        return (string) $this->scopeConfig->getValue(self::XML_PATH_EMBEDDING_OLLAMA_HOST) ?: 'http://ollama:11434';
-    }
-
-    /**
-     * Get Ollama model
-     *
-     * @return string
-     */
-    public function getOllamaModel(): string
-    {
-        return (string) $this->scopeConfig->getValue(self::XML_PATH_EMBEDDING_OLLAMA_MODEL) ?: 'nomic-embed-text';
     }
 
     /**

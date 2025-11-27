@@ -33,8 +33,6 @@
         <arguments>
             <argument name="providers" xsi:type="array">
                 <item name="chromadb" xsi:type="string">Navindbhudiya\ProductRecommendation\Service\Embedding\ChromaDBEmbeddingProvider</item>
-                <item name="openai" xsi:type="string">Navindbhudiya\ProductRecommendation\Service\Embedding\OpenAIEmbeddingProvider</item>
-                <item name="ollama" xsi:type="string">Navindbhudiya\ProductRecommendation\Service\Embedding\OllamaEmbeddingProvider</item>
             </argument>
         </arguments>
     </type>

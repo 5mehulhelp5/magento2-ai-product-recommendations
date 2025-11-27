@@ -24,9 +24,6 @@
             </chromadb>
             <embedding>
                 <provider>chromadb</provider>
-                <openai_model>text-embedding-3-small</openai_model>
-                <ollama_host>http://ollama:11434</ollama_host>
-                <ollama_model>nomic-embed-text</ollama_model>
                 <product_attributes>name,short_description,description,meta_keywords</product_attributes>
                 <include_categories>1</include_categories>
             </embedding>
