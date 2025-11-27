@@ -1,0 +1,49 @@
+# ChromaDB Docker Configuration for Warden
+# Add this to your .warden/warden-env.yml or docker-compose.override.yml
+
+version: "3.8"
+
+services:
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: ${WARDEN_ENV_NAME}_chromadb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chromadb_data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - ANONYMIZED_TELEMETRY=FALSE
+      - ALLOW_RESET=TRUE
+    networks:
+      - default
+
+  # Optional: Ollama for local AI embeddings
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ${WARDEN_ENV_NAME}_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - default
+    # Uncomment for GPU support
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  chromadb_data:
+  ollama_data:
+
+networks:
+  default:
+    name: ${WARDEN_ENV_NAME}_default
+    external: true

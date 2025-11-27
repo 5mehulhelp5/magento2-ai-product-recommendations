@@ -1,0 +1,55 @@
+{
+    "name": "navindbhudiya/module-product-recommendation",
+    "description": "AI-Powered Product Recommendations using ChromaDB Vector Database for Magento 2",
+    "keywords": [
+        "magento2",
+        "magento 2",
+        "ai",
+        "product recommendation",
+        "chromadb",
+        "vector database",
+        "embeddings",
+        "machine learning",
+        "related products",
+        "cross-sell",
+        "up-sell"
+    ],
+    "type": "magento2-module",
+    "license": "MIT",
+    "homepage": "https://github.com/navindbhudiya/magento2-product-recommendation",
+    "authors": [
+        {
+            "name": "Navin Bhudiya",
+            "email": "navindbhudiya@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "magento/framework": "*",
+        "magento/module-catalog": "*",
+        "magento/module-store": "*",
+        "magento/module-config": "*",
+        "magento/module-eav": "*",
+        "guzzlehttp/guzzle": "^7.0"
+    },
+    "suggest": {
+        "magento/module-catalog-widget": "Required for recommendation widgets"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Navindbhudiya\\ProductRecommendation\\": ""
+        }
+    },
+    "minimum-stability": "stable",
+    "extra": {
+        "magento-root-dir": "./"
+    },
+    "support": {
+        "issues": "https://github.com/navindbhudiya/magento2-product-recommendation/issues",
+        "source": "https://github.com/navindbhudiya/magento2-product-recommendation"
+    }
+}

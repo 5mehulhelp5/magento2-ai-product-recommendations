@@ -1,0 +1,14 @@
+# Embedding Service Requirements
+# Compatible versions tested together
+
+flask==3.0.0
+gunicorn==21.2.0
+
+# PyTorch CPU-only version (smaller image)
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.1.0
+
+# Transformers and sentence-transformers
+transformers==4.36.0
+sentence-transformers==2.6.1
+huggingface_hub==0.20.3

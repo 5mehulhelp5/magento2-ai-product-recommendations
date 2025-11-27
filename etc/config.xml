@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @category  Navindbhudiya
+ * @package   Navindbhudiya_ProductRecommendation
+ * @author    Navin Bhudiya
+ * @license   MIT License
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <product_recommendation>
+            <general>
+                <enabled>1</enabled>
+                <debug_mode>0</debug_mode>
+            </general>
+            <chromadb>
+                <host>chromadb</host>
+                <port>8000</port>
+                <collection_name>magento_products</collection_name>
+            </chromadb>
+            <embedding>
+                <provider>chromadb</provider>
+                <openai_model>text-embedding-3-small</openai_model>
+                <ollama_host>http://ollama:11434</ollama_host>
+                <ollama_model>nomic-embed-text</ollama_model>
+                <product_attributes>name,short_description,description,meta_keywords</product_attributes>
+                <include_categories>1</include_categories>
+            </embedding>
+            <recommendation>
+                <related_enabled>1</related_enabled>
+                <related_count>4</related_count>
+                <crosssell_enabled>1</crosssell_enabled>
+                <crosssell_count>4</crosssell_count>
+                <upsell_enabled>1</upsell_enabled>
+                <upsell_count>4</upsell_count>
+                <similarity_threshold>0.5</similarity_threshold>
+                <exclude_same_category>1</exclude_same_category>
+                <upsell_price_threshold>10</upsell_price_threshold>
+                <fallback_to_native>1</fallback_to_native>
+            </recommendation>
+            <cache>
+                <enabled>1</enabled>
+                <lifetime>3600</lifetime>
+            </cache>
+        </product_recommendation>
+    </default>
+</config>

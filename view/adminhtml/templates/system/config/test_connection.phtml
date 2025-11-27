@@ -1,0 +1,51 @@
+<?php
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @var \Navindbhudiya\ProductRecommendation\Block\Adminhtml\System\Config\TestConnection $block
+ */
+?>
+<div id="test_connection_result" style="margin-bottom: 10px;"></div>
+<?= $block->getButtonHtml() ?>
+<script>
+require(['jquery', 'Magento_Ui/js/modal/alert'], function($, alert) {
+    $('#test_connection_button').on('click', function() {
+        var $button = $(this);
+        var $result = $('#test_connection_result');
+        
+        $button.prop('disabled', true).addClass('disabled');
+        $result.html('<span style="color: #666;">Testing connection...</span>');
+        
+        $.ajax({
+            url: '<?= $block->escapeUrl($block->getAjaxUrl()) ?>',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                form_key: window.FORM_KEY
+            },
+            success: function(response) {
+                $button.prop('disabled', false).removeClass('disabled');
+                
+                if (response.success) {
+                    $result.html('<span style="color: #0a0; font-weight: bold;">✓ ' + response.message + '</span>');
+                    
+                    if (response.details) {
+                        var details = '<ul style="margin-top: 5px; font-size: 12px;">';
+                        $.each(response.details, function(key, value) {
+                            details += '<li><strong>' + key + ':</strong> ' + value + '</li>';
+                        });
+                        details += '</ul>';
+                        $result.append(details);
+                    }
+                } else {
+                    $result.html('<span style="color: #c00; font-weight: bold;">✗ ' + response.message + '</span>');
+                }
+            },
+            error: function(xhr, status, error) {
+                $button.prop('disabled', false).removeClass('disabled');
+                $result.html('<span style="color: #c00; font-weight: bold;">✗ Connection failed: ' + error + '</span>');
+            }
+        });
+    });
+});
+</script>

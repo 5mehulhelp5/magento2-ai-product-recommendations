@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @category  Navindbhudiya
+ * @package   Navindbhudiya_ProductRecommendation
+ * @author    Navin Bhudiya
+ * @license   MIT License
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="product_recommendation_embedding"
+             view_id="product_recommendation_embedding"
+             class="Navindbhudiya\ProductRecommendation\Model\Indexer\ProductEmbedding"
+             primary="entity_id">
+        <title>Product Recommendation Embeddings</title>
+        <description>Generates and updates product embeddings in ChromaDB for AI recommendations</description>
+        <dependencies>
+            <indexer id="catalog_product_attribute"/>
+            <indexer id="catalog_category_product"/>
+        </dependencies>
+    </indexer>
+</config>

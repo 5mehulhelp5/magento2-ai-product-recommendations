@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @category  Navindbhudiya
+ * @package   Navindbhudiya_ProductRecommendation
+ * @author    Navin Bhudiya
+ * @license   MIT License
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="navindbhudiya" translate="label" sortOrder="500">
+            <label>Navindbhudiya</label>
+        </tab>
+
+        <section id="product_recommendation" translate="label" sortOrder="10"
+                 showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>AI Product Recommendation</label>
+            <tab>navindbhudiya</tab>
+            <resource>Navindbhudiya_ProductRecommendation::config</resource>
+
+            <!-- General Settings -->
+            <group id="general" translate="label" sortOrder="10"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable or disable AI Product Recommendations</comment>
+                </field>
+
+                <field id="debug_mode" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Debug Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable debug logging for troubleshooting</comment>
+                </field>
+            </group>
+
+            <!-- ChromaDB Settings -->
+            <group id="chromadb" translate="label" sortOrder="20"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>ChromaDB Configuration</label>
+
+                <field id="host" translate="label comment" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>ChromaDB Host</label>
+                    <comment>ChromaDB server hostname (e.g., chromadb or localhost)</comment>
+                    <validate>required-entry</validate>
+                </field>
+
+                <field id="port" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>ChromaDB Port</label>
+                    <comment>ChromaDB server port (default: 8000)</comment>
+                    <validate>required-entry validate-digits</validate>
+                </field>
+
+                <field id="collection_name" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Collection Name</label>
+                    <comment>Name of the ChromaDB collection for product embeddings</comment>
+                    <validate>required-entry</validate>
+                </field>
+
+                <field id="test_connection" translate="label" type="button" sortOrder="40"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Test Connection</label>
+                    <frontend_model>Navindbhudiya\ProductRecommendation\Block\Adminhtml\System\Config\TestConnection</frontend_model>
+                </field>
+            </group>
+
+            <!-- Embedding Provider Settings -->
+            <group id="embedding" translate="label" sortOrder="30"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Embedding Configuration</label>
+
+                <field id="provider" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Embedding Provider</label>
+                    <source_model>Navindbhudiya\ProductRecommendation\Model\Config\Source\EmbeddingProvider</source_model>
+                    <comment>Select the embedding provider for generating product vectors</comment>
+                </field>
+
+                <!-- OpenAI Settings -->
+                <field id="openai_api_key" translate="label comment" type="obscure" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>OpenAI API Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment>Your OpenAI API key for generating embeddings</comment>
+                    <depends>
+                        <field id="provider">openai</field>
+                    </depends>
+                </field>
+
+                <field id="openai_model" translate="label comment" type="select" sortOrder="25"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>OpenAI Model</label>
+                    <source_model>Navindbhudiya\ProductRecommendation\Model\Config\Source\OpenAIModel</source_model>
+                    <comment>Select the OpenAI embedding model</comment>
+                    <depends>
+                        <field id="provider">openai</field>
+                    </depends>
+                </field>
+
+                <!-- Ollama Settings -->
+                <field id="ollama_host" translate="label comment" type="text" sortOrder="30"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Ollama Host</label>
+                    <comment>Ollama server URL (e.g., http://ollama:11434)</comment>
+                    <depends>
+                        <field id="provider">ollama</field>
+                    </depends>
+                </field>
+
+                <field id="ollama_model" translate="label comment" type="text" sortOrder="35"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Ollama Model</label>
+                    <comment>Ollama embedding model (e.g., nomic-embed-text, mxbai-embed-large)</comment>
+                    <depends>
+                        <field id="provider">ollama</field>
+                    </depends>
+                </field>
+
+                <!-- Product Attributes for Embedding -->
+                <field id="product_attributes" translate="label comment" type="multiselect" sortOrder="50"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Product Attributes</label>
+                    <source_model>Navindbhudiya\ProductRecommendation\Model\Config\Source\ProductAttributes</source_model>
+                    <comment>Select product attributes to include in embedding generation</comment>
+                    <can_be_empty>0</can_be_empty>
+                </field>
+
+                <field id="include_categories" translate="label comment" type="select" sortOrder="60"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Include Category Names</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Include product category names in embedding text</comment>
+                </field>
+            </group>
+
+            <!-- Recommendation Settings -->
+            <group id="recommendation" translate="label" sortOrder="40"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Recommendation Settings</label>
+
+                <field id="related_enabled" translate="label" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable AI Related Products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="related_count" translate="label comment" type="text" sortOrder="15"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Related Products Count</label>
+                    <comment>Maximum number of AI-recommended related products</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="related_enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="crosssell_enabled" translate="label" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable AI Cross-sell Products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="crosssell_count" translate="label comment" type="text" sortOrder="25"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cross-sell Products Count</label>
+                    <comment>Maximum number of AI-recommended cross-sell products</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="crosssell_enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="upsell_enabled" translate="label" type="select" sortOrder="30"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable AI Up-sell Products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+
+                <field id="upsell_count" translate="label comment" type="text" sortOrder="35"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Up-sell Products Count</label>
+                    <comment>Maximum number of AI-recommended up-sell products</comment>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="upsell_enabled">1</field>
+                    </depends>
+                </field>
+
+                <field id="similarity_threshold" translate="label comment" type="text" sortOrder="40"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Similarity Threshold</label>
+                    <comment>Minimum similarity score (0.0 - 1.0) for recommendations. Higher = more relevant but fewer results.</comment>
+                    <validate>validate-number</validate>
+                </field>
+
+                <field id="exclude_same_category" translate="label comment" type="select" sortOrder="50"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cross-sell: Exclude Same Category</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>For cross-sell, exclude products from the same category</comment>
+                </field>
+
+                <field id="upsell_price_threshold" translate="label comment" type="text" sortOrder="60"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Up-sell Price Threshold (%)</label>
+                    <comment>For up-sell, only show products with price higher by this percentage</comment>
+                    <validate>validate-digits</validate>
+                </field>
+
+                <field id="fallback_to_native" translate="label comment" type="select" sortOrder="70"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Fallback to Native</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>If AI recommendations are unavailable, show native Magento recommendations</comment>
+                </field>
+            </group>
+
+            <!-- Cache Settings -->
+            <group id="cache" translate="label" sortOrder="50"
+                   showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Cache Settings</label>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable Recommendation Cache</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Cache AI recommendations to improve performance</comment>
+                </field>
+
+                <field id="lifetime" translate="label comment" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Cache Lifetime (seconds)</label>
+                    <comment>How long to cache recommendations (default: 3600 = 1 hour)</comment>
+                    <validate>validate-digits</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

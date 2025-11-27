@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @category  Navindbhudiya
+ * @package   Navindbhudiya_ProductRecommendation
+ * @author    Navin Bhudiya
+ * @license   MIT License
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- API Interfaces -->
+    <preference for="Navindbhudiya\ProductRecommendation\Api\ChromaClientInterface"
+                type="Navindbhudiya\ProductRecommendation\Service\ChromaClient"/>
+
+    <preference for="Navindbhudiya\ProductRecommendation\Api\EmbeddingProviderInterface"
+                type="Navindbhudiya\ProductRecommendation\Service\Embedding\EmbeddingProviderFactory"/>
+
+    <preference for="Navindbhudiya\ProductRecommendation\Api\RecommendationServiceInterface"
+                type="Navindbhudiya\ProductRecommendation\Service\RecommendationService"/>
+
+    <preference for="Navindbhudiya\ProductRecommendation\Api\Data\ProductEmbeddingInterface"
+                type="Navindbhudiya\ProductRecommendation\Model\Data\ProductEmbedding"/>
+
+    <preference for="Navindbhudiya\ProductRecommendation\Api\Data\RecommendationResultInterface"
+                type="Navindbhudiya\ProductRecommendation\Model\Data\RecommendationResult"/>
+
+    <!-- Embedding Provider Pool -->
+    <type name="Navindbhudiya\ProductRecommendation\Service\Embedding\EmbeddingProviderFactory">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="chromadb" xsi:type="string">Navindbhudiya\ProductRecommendation\Service\Embedding\ChromaDBEmbeddingProvider</item>
+                <item name="openai" xsi:type="string">Navindbhudiya\ProductRecommendation\Service\Embedding\OpenAIEmbeddingProvider</item>
+                <item name="ollama" xsi:type="string">Navindbhudiya\ProductRecommendation\Service\Embedding\OllamaEmbeddingProvider</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Virtual Types for Logging -->
+    <virtualType name="Navindbhudiya\ProductRecommendation\Logger\Handler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/product_recommendation.log</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Navindbhudiya\ProductRecommendation\Logger\Logger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Inject Logger -->
+    <type name="Navindbhudiya\ProductRecommendation\Service\ChromaClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Service\RecommendationService">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <!-- CLI Commands -->
+    <type name="Magento\Framework\Console\CommandList">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="recommendation_index" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\IndexProducts</item>
+                <item name="recommendation_test" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\TestConnection</item>
+                <item name="recommendation_similar" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\GetSimilarProducts</item>
+                <item name="recommendation_clear" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\ClearCollection</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Indexer -->
+    <type name="Magento\Framework\Indexer\IndexerRegistry">
+        <arguments>
+            <argument name="indexers" xsi:type="array">
+                <item name="product_recommendation_embedding" xsi:type="string">product_recommendation_embedding</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Cache Type -->
+    <type name="Magento\Framework\App\Cache\TypeList">
+        <arguments>
+            <argument name="typeList" xsi:type="array">
+                <item name="product_recommendation" xsi:type="array">
+                    <item name="name" xsi:type="string">product_recommendation</item>
+                    <item name="label" xsi:type="string">AI Product Recommendations</item>
+                    <item name="description" xsi:type="string">Cached AI product recommendations</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

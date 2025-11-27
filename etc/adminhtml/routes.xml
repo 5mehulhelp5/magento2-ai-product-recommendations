@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @category  Navindbhudiya
+ * @package   Navindbhudiya_ProductRecommendation
+ * @author    Navin Bhudiya
+ * @license   MIT License
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+    <router id="admin">
+        <route id="recommendation" frontName="recommendation">
+            <module name="Navindbhudiya_ProductRecommendation" before="Magento_Backend"/>
+        </route>
+    </router>
+</config>

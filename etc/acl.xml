@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ *
+ * @category  Navindbhudiya
+ * @package   Navindbhudiya_ProductRecommendation
+ * @author    Navin Bhudiya
+ * @license   MIT License
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Acl/etc/acl.xsd">
+    <acl>
+        <resources>
+            <resource id="Magento_Backend::admin">
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="Navindbhudiya_ProductRecommendation::config"
+                                      title="AI Product Recommendation Configuration"
+                                      sortOrder="100"/>
+                        </resource>
+                    </resource>
+                </resource>
+                <resource id="Magento_Catalog::catalog">
+                    <resource id="Navindbhudiya_ProductRecommendation::recommendation"
+                              title="AI Product Recommendations"
+                              sortOrder="50">
+                        <resource id="Navindbhudiya_ProductRecommendation::index"
+                                  title="Manage Recommendations"
+                                  sortOrder="10"/>
+                        <resource id="Navindbhudiya_ProductRecommendation::reindex"
+                                  title="Reindex Embeddings"
+                                  sortOrder="20"/>
+                    </resource>
+                </resource>
+            </resource>
+        </resources>
+    </acl>
+</config>
