@@ -94,7 +94,7 @@ class GetSimilarProducts extends Command
             )
             ->addOption(
                 self::OPTION_QUERY,
-                'q',
+                null,
                 InputOption::VALUE_OPTIONAL,
                 'Search by text query instead of product ID'
             );
