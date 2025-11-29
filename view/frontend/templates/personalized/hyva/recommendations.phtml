@@ -1,0 +1,175 @@
+<?php
+/**
+ * Navindbhudiya ProductRecommendation
+ * Hyvä Theme Compatible Template
+ *
+ * @var \Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations $block
+ */
+
+use Magento\Framework\Escaper;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\ProductListItem;
+use Hyva\Theme\ViewModel\ProductPage;
+
+/** @var Escaper $escaper */
+/** @var ViewModelRegistry $viewModels */
+
+$products = $block->getProducts();
+if (empty($products)) {
+    return;
+}
+
+$type = $block->getRecommendationType();
+$title = $block->getTitle();
+
+// Hyvä ViewModels
+$productListItemViewModel = $viewModels->require(ProductListItem::class);
+$productViewModel = $viewModels->require(ProductPage::class);
+
+// Icons based on type
+$icons = [
+    'browsing' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>',
+    'purchase' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>',
+    'wishlist' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
+    'just_for_you' => '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>'
+];
+$icon = $icons[$type] ?? $icons['just_for_you'];
+
+// Color schemes
+$colors = [
+    'browsing' => 'blue',
+    'purchase' => 'green', 
+    'wishlist' => 'pink',
+    'just_for_you' => 'orange'
+];
+$color = $colors[$type] ?? 'orange';
+?>
+
+<section class="my-8 personalized-recommendations personalized-<?= $escaper->escapeHtmlAttr($type) ?>"
+         x-data="initPersonalizedSlider()"
+         x-init="init()">
+    
+    <div class="container mx-auto px-4">
+        <!-- Title -->
+        <div class="flex items-center gap-3 mb-6">
+            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-<?= $color ?>-100 text-<?= $color ?>-600">
+                <?= /* @noEscape */ $icon ?>
+            </span>
+            <h2 class="text-2xl font-semibold text-gray-800">
+                <?= $escaper->escapeHtml($title) ?>
+            </h2>
+        </div>
+
+        <!-- Products Slider -->
+        <div class="relative">
+            <!-- Navigation Buttons -->
+            <button @click="scrollLeft()" 
+                    class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors -ml-5"
+                    :class="{ 'opacity-50 cursor-not-allowed': atStart }">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            
+            <button @click="scrollRight()" 
+                    class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors -mr-5"
+                    :class="{ 'opacity-50 cursor-not-allowed': atEnd }">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+
+            <!-- Products Container -->
+            <div x-ref="slider" 
+                 @scroll="updateScrollState()"
+                 class="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-4">
+                
+                <?php foreach ($products as $product): ?>
+                    <div class="flex-none w-64 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                        <!-- Product Image -->
+                        <a href="<?= $escaper->escapeUrl($block->getProductUrl($product)) ?>" 
+                           class="block relative overflow-hidden rounded-t-lg">
+                            <?php
+                            $imageUrl = $productViewModel->getProductImageUrl($product, 'category_page_grid');
+                            ?>
+                            <img src="<?= $escaper->escapeUrl($imageUrl) ?>"
+                                 alt="<?= $escaper->escapeHtmlAttr($product->getName()) ?>"
+                                 class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                                 loading="lazy"/>
+                        </a>
+
+                        <div class="p-4">
+                            <!-- Product Name -->
+                            <a href="<?= $escaper->escapeUrl($block->getProductUrl($product)) ?>" 
+                               class="block text-gray-800 font-medium hover:text-<?= $color ?>-600 transition-colors line-clamp-2 min-h-[3rem]">
+                                <?= $escaper->escapeHtml($product->getName()) ?>
+                            </a>
+
+                            <!-- Price -->
+                            <div class="mt-2">
+                                <?= /* @noEscape */ $productListItemViewModel->getProductPriceHtml($product) ?>
+                            </div>
+
+                            <!-- Add to Cart -->
+                            <?php if ($product->isSaleable()): ?>
+                                <form action="<?= $escaper->escapeUrl($block->getAddToCartUrl($product)) ?>"
+                                      method="post"
+                                      class="mt-4">
+                                    <?= $block->getBlockHtml('formkey') ?>
+                                    <input type="hidden" name="product" value="<?= (int) $product->getId() ?>">
+                                    <button type="submit"
+                                            class="w-full py-2 px-4 bg-<?= $color ?>-600 hover:bg-<?= $color ?>-700 text-white font-medium rounded-lg transition-colors">
+                                        <?= $escaper->escapeHtml(__('Add to Cart')) ?>
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <div class="mt-4 py-2 px-4 bg-gray-100 text-gray-500 text-center rounded-lg">
+                                    <?= $escaper->escapeHtml(__('Out of Stock')) ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function initPersonalizedSlider() {
+        return {
+            atStart: true,
+            atEnd: false,
+            
+            init() {
+                this.$nextTick(() => this.updateScrollState());
+            },
+            
+            scrollLeft() {
+                const slider = this.$refs.slider;
+                slider.scrollBy({ left: -280, behavior: 'smooth' });
+            },
+            
+            scrollRight() {
+                const slider = this.$refs.slider;
+                slider.scrollBy({ left: 280, behavior: 'smooth' });
+            },
+            
+            updateScrollState() {
+                const slider = this.$refs.slider;
+                this.atStart = slider.scrollLeft <= 0;
+                this.atEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10;
+            }
+        }
+    }
+</script>
+
+<style>
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+</style>

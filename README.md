@@ -18,14 +18,39 @@ Intelligent product recommendations powered by AI vector embeddings and ChromaDB
 
 - **Magento**: 2.4.x (Community Edition)
 - **PHP**: 8.1 or higher
-- **ChromaDB**: v0.4.24 (Docker container)
-- **Embedding Service**: Python container with sentence-transformers
-- **Docker**: Required for ChromaDB and embedding service
+- **ChromaDB**: v0.4.24 or higher
+- **Embedding Service**: Python service with sentence-transformers
 - **Composer**: For PHP dependencies
 
 ## Installation
 
-### 1. Copy Module Files
+### 1. Install ChromaDB
+
+ChromaDB is the vector database that powers the AI recommendations. Visit [https://www.trychroma.com/](https://www.trychroma.com/) for official documentation.
+
+```bash
+# Install ChromaDB
+pip install chromadb
+
+# Run ChromaDB server
+chroma run --host 0.0.0.0 --port 8000
+```
+
+For more installation options and configuration, visit the [ChromaDB documentation](https://docs.trychroma.com/getting-started).
+
+### 2. Install Embedding Service
+
+The embedding service generates vector embeddings from product text using the sentence-transformers library.
+
+```bash
+# Install dependencies
+pip install flask sentence-transformers
+
+# Run the embedding service
+# The service should run on port 8001 and provide an /embed endpoint
+```
+
+### 3. Copy Module Files
 
 ```bash
 # Copy module to Magento app/code directory
@@ -33,39 +58,9 @@ mkdir -p app/code/Navindbhudiya/ProductRecommendation
 cp -r path/to/module/* app/code/Navindbhudiya/ProductRecommendation/
 ```
 
-### 2. Setup Docker Containers
-
-**For Warden Users:**
-```bash
-# Copy Warden configuration
-cp app/code/Navindbhudiya/ProductRecommendation/docker/warden-env.yml .warden/warden-env.yml
-
-# Start Warden environment
-warden env up -d
-
-# Wait for embedding service to load model
-docker logs $(docker ps -qf name=embedding) -f
-```
-
-**For Standalone Docker:**
-```bash
-# Navigate to docker directory
-cd app/code/Navindbhudiya/ProductRecommendation/docker/
-
-# Start containers
-docker-compose up -d
-
-# Check logs
-docker logs chromadb
-docker logs embedding-service
-```
-
-### 3. Enable Module
+### 4. Enable Module
 
 ```bash
-# If using Warden
-warden shell
-
 # Enable module
 bin/magento module:enable Navindbhudiya_ProductRecommendation
 
@@ -78,7 +73,7 @@ bin/magento setup:static-content:deploy -f
 bin/magento cache:flush
 ```
 
-### 4. Verify Installation
+### 5. Verify Installation
 
 ```bash
 # Test connections
@@ -216,58 +211,46 @@ bin/magento recommendation:clear --force
 
 ### "Embedding service not available"
 
-**Check if container is running:**
+**Test embedding service:**
 ```bash
-docker ps | grep embedding
-```
-
-**Check logs:**
-```bash
-docker logs $(docker ps -qf name=embedding)
-```
-
-**Test directly:**
-```bash
-curl -X POST http://embedding-service:8001/embed \
+curl -X POST http://your-embedding-service:8001/embed \
   -H "Content-Type: application/json" \
   -d '{"texts": ["test product"]}'
 ```
 
+Check your embedding service configuration in the admin panel.
+
 ### "ChromaDB connection failed"
 
-**Check ChromaDB container:**
+**Test ChromaDB connection:**
 ```bash
-docker ps | grep chromadb
-docker logs $(docker ps -qf name=chromadb)
+curl http://your-chromadb-host:8000/api/v1/heartbeat
 ```
 
-**Test connection:**
-```bash
-curl http://chromadb:8000/api/v1/heartbeat
-```
+Verify ChromaDB host and port in **Stores > Configuration > Navindbhudiya > AI Product Recommendation > ChromaDB Configuration**.
 
 ### "422 Error from ChromaDB"
 
-This means the code is trying to use `query_texts` without embeddings. This should not happen with the current version. Run:
+This means the code is trying to use `query_texts` without embeddings. Run the test command:
 ```bash
 bin/magento recommendation:test
 ```
 
 ### Empty Recommendations
 
-1. **Verify products are indexed:**
+**Verify products are indexed:**
 ```bash
 bin/magento recommendation:test
 # Check "Documents indexed" count
 ```
 
-2. **Enable debug mode** and check logs:
+**Enable debug mode and check logs:**
 ```bash
 bin/magento config:set product_recommendation/general/debug_mode 1
 tail -f var/log/product_recommendation.log
 ```
 
-3. **Reindex products:**
+**Reindex products:**
 ```bash
 bin/magento recommendation:clear --force
 bin/magento recommendation:index
@@ -290,32 +273,223 @@ The embedding service processes products sequentially. For large catalogs:
 
 ## Development
 
-### File Structure
+### Complete Module Structure
 
 ```
 app/code/Navindbhudiya/ProductRecommendation/
-├── Api/                    # Service contracts
-├── Block/                  # UI blocks
-├── Console/Command/        # CLI commands
-├── Controller/             # Controllers
-├── Cron/                   # Cron jobs
-├── Helper/                 # Helper classes
-├── Model/                  # Data models
-├── Observer/               # Event observers
-├── Plugin/                 # Plugins
-├── Service/                # Core services
-├── docker/                 # Docker configuration
-├── etc/                    # Configuration XML
-└── view/                   # Templates and layouts
+│
+├── Api/                                          # Service Contracts & Interfaces
+│   ├── Data/
+│   │   ├── CustomerProfileInterface.php          # Customer profile data interface
+│   │   ├── ProductEmbeddingInterface.php         # Product embedding data interface
+│   │   └── RecommendationResultInterface.php     # Recommendation result interface
+│   ├── BehaviorCollectorInterface.php            # Behavior collection contract
+│   ├── ChromaClientInterface.php                 # ChromaDB client contract
+│   ├── EmbeddingProviderInterface.php            # Embedding provider contract
+│   ├── PersonalizedRecommendationInterface.php   # Personalized recommendations contract
+│   ├── PersonalizedRecommendationManagementInterface.php  # Management interface
+│   ├── ProductEmbeddingRepositoryInterface.php   # Product embedding repository contract
+│   └── RecommendationServiceInterface.php        # Recommendation service contract
+│
+├── Block/                                        # UI Blocks
+│   ├── Adminhtml/
+│   │   └── System/Config/
+│   │       └── TestConnection.php                # Admin test connection button
+│   ├── Personalized/
+│   │   └── Recommendations.php                   # Personalized recommendations block
+│   └── Widget/
+│       ├── PersonalizedProducts.php              # Widget for personalized products
+│       └── PersonalizedRecommendations.php       # Personalized recommendations widget
+│
+├── Console/Command/                              # CLI Commands
+│   ├── ClearCollection.php                       # Clear ChromaDB collection
+│   ├── GetPersonalizedRecommendations.php        # Get personalized recommendations CLI
+│   ├── GetSimilarProducts.php                    # Get similar products CLI
+│   ├── IndexProducts.php                         # Index all products
+│   ├── RefreshProfiles.php                       # Refresh customer profiles
+│   └── TestConnection.php                        # Test connections CLI
+│
+├── Controller/                                   # Controllers
+│   ├── Adminhtml/System/Config/
+│   │   └── TestConnection.php                    # Admin test connection controller
+│   └── Ajax/
+│       └── Personalized.php                      # AJAX personalized recommendations
+│
+├── Cron/                                        # Cron Jobs
+│   ├── CleanCache.php                            # Clean expired cache entries
+│   ├── RefreshCustomerProfiles.php               # Refresh stale customer profiles
+│   └── SyncEmbeddings.php                        # Sync product embeddings
+│
+├── Helper/                                      # Helpers
+│   └── Config.php                                # Configuration helper
+│
+├── Model/                                       # Models & Data Objects
+│   ├── Cache/Type/
+│   │   └── Recommendation.php                    # Custom cache type
+│   ├── Config/Source/
+│   │   ├── EmbeddingProvider.php                 # Embedding provider dropdown
+│   │   └── ProductAttributes.php                 # Product attributes dropdown
+│   ├── Data/
+│   │   ├── CustomerProfile.php                   # Customer profile data model
+│   │   ├── ProductEmbedding.php                  # Product embedding data model
+│   │   └── RecommendationResult.php              # Recommendation result data model
+│   ├── Indexer/
+│   │   └── ProductEmbedding.php                  # Product embedding indexer
+│   ├── ResourceModel/
+│   │   └── CustomerProfile/
+│   │       ├── Collection.php                    # Customer profile collection
+│   │       └── CustomerProfile.php               # Customer profile resource model
+│   ├── PersonalizedRecommendationManagement.php  # Personalized recommendation management
+│   └── Resolver/
+│       └── PersonalizedRecommendations.php       # GraphQL resolver
+│
+├── Observer/                                    # Event Observers
+│   ├── CustomerLoginRefresh.php                  # Refresh profile on customer login
+│   ├── ProductDeleteBefore.php                   # Handle product deletion
+│   ├── ProductMassUpdate.php                     # Handle mass product updates
+│   ├── ProductSaveAfter.php                      # Index product after save
+│   └── ProductViewTracker.php                    # Track product views
+│
+├── Plugin/                                      # Plugins (Interceptors)
+│   ├── Checkout/
+│   │   └── CrosssellProducts.php                 # Override cross-sell products
+│   └── Product/
+│       ├── RelatedProducts.php                   # Override related products
+│       └── UpsellProducts.php                    # Override up-sell products
+│
+├── Service/                                     # Core Business Logic
+│   ├── BehaviorCollector/
+│   │   ├── BrowsingHistoryCollector.php          # Collect browsing history
+│   │   ├── PurchaseHistoryCollector.php          # Collect purchase history
+│   │   └── WishlistCollector.php                 # Collect wishlist data
+│   ├── Embedding/
+│   │   ├── ChromaDBEmbeddingProvider.php         # ChromaDB embedding provider
+│   │   └── EmbeddingProviderFactory.php          # Embedding provider factory
+│   ├── ChromaClient.php                          # ChromaDB HTTP client
+│   ├── PersonalizedRecommendationService.php     # Personalized recommendation service
+│   ├── ProductTextBuilder.php                    # Build product text for embeddings
+│   └── RecommendationService.php                 # Main recommendation service
+│
+├── Setup/                                       # Database Setup (deprecated location)
+│
+├── docs/                                        # Documentation
+│   └── LOCAL_INSTALLATION.md                     # Detailed installation guide
+│
+├── etc/                                         # Module Configuration
+│   ├── adminhtml/
+│   │   ├── routes.xml                            # Admin routes
+│   │   └── system.xml                            # Admin configuration structure
+│   ├── frontend/
+│   │   ├── di.xml                                # Frontend dependency injection
+│   │   ├── events.xml                            # Frontend events
+│   │   └── routes.xml                            # Frontend routes
+│   ├── acl.xml                                   # ACL permissions
+│   ├── cache.xml                                 # Cache type definition
+│   ├── config.xml                                # Default configuration values
+│   ├── crontab.xml                               # Cron job schedule
+│   ├── db_schema.xml                             # Database schema
+│   ├── di.xml                                    # Dependency injection
+│   ├── events.xml                                # Event observers
+│   ├── graphql/                                  # GraphQL schema (if present)
+│   ├── indexer.xml                               # Indexer configuration
+│   ├── module.xml                                # Module declaration
+│   ├── mview.xml                                 # Materialized view
+│   ├── webapi.xml                                # REST API definitions
+│   └── widget.xml                                # Widget definitions
+│
+├── view/                                        # Templates, Layouts & Assets
+│   ├── adminhtml/
+│   │   └── templates/system/config/
+│   │       └── test_connection.phtml             # Test connection template
+│   └── frontend/
+│       ├── layout/
+│       │   ├── cms_index_index.xml               # Homepage layout
+│       │   ├── customer_account_index.xml        # Customer account layout
+│       │   └── default.xml                       # Default layout
+│       ├── templates/personalized/
+│       │   ├── hyva/
+│       │   │   └── recommendations.phtml         # Hyva theme template
+│       │   ├── recommendations.phtml             # Personalized recommendations
+│       │   └── slider.phtml                      # Slider template
+│       ├── web/
+│       │   ├── css/
+│       │   │   └── personalized.css              # Personalized CSS styles
+│       │   └── js/
+│       │       └── personalized-slider.js        # Slider JavaScript
+│       └── requirejs-config.js                   # RequireJS configuration
+│
+├── .gitignore                                   # Git ignore rules
+├── CLAUDE.md                                    # AI assistant context file
+├── LICENSE.txt                                  # Module license
+├── README.md                                    # This file
+├── composer.json                                # Composer dependencies
+└── registration.php                             # Module registration
 ```
 
-### Key Files
+### Key Files Explained
 
-- `Service/ChromaClient.php` - ChromaDB HTTP client (v0.4.x and v0.5.x compatible)
-- `Service/RecommendationService.php` - Main recommendation logic
-- `Service/Embedding/ChromaDBEmbeddingProvider.php` - Embedding generation
-- `Model/Indexer/ProductEmbedding.php` - Product indexer
-- `docker/embedding-service/app.py` - Python embedding service
+#### Core Services
+- **`Service/ChromaClient.php`**
+  HTTP client for ChromaDB REST API (v0.4.x and v0.5.x compatible). Handles all vector database operations.
+
+- **`Service/RecommendationService.php`**
+  Main recommendation logic. Uses query embeddings (NOT query_texts) to find similar products.
+
+- **`Service/PersonalizedRecommendationService.php`**
+  Generates personalized recommendations based on customer behavior profiles.
+
+- **`Service/ProductTextBuilder.php`**
+  Extracts and builds text from product attributes for embedding generation.
+
+#### Embedding Providers
+- **`Service/Embedding/ChromaDBEmbeddingProvider.php`**
+  Calls embedding-service to generate vectors using sentence-transformers.
+
+- **`Service/Embedding/EmbeddingProviderFactory.php`**
+  Factory for creating embedding provider instances.
+
+#### Behavior Collectors
+- **`Service/BehaviorCollector/BrowsingHistoryCollector.php`**
+  Collects customer browsing history from `report_viewed_product_index`.
+
+- **`Service/BehaviorCollector/PurchaseHistoryCollector.php`**
+  Collects purchase history from `sales_order_item`.
+
+- **`Service/BehaviorCollector/WishlistCollector.php`**
+  Collects wishlist items from `wishlist_item`.
+
+#### Indexing & Data
+- **`Model/Indexer/ProductEmbedding.php`**
+  Indexes products and generates embeddings. Triggered on product save or via CLI.
+
+- **`Model/ResourceModel/CustomerProfile.php`**
+  Customer profile resource model for database operations.
+
+#### Plugins
+- **`Plugin/Product/RelatedProducts.php`**
+  Intercepts related product loading to inject AI recommendations.
+
+- **`Plugin/Product/UpsellProducts.php`**
+  Intercepts up-sell product loading to inject AI recommendations.
+
+- **`Plugin/Checkout/CrosssellProducts.php`**
+  Intercepts cross-sell product loading to inject AI recommendations.
+
+#### CLI Commands
+All CLI commands are in `Console/Command/`:
+- `TestConnection.php` - Test ChromaDB and embedding service
+- `IndexProducts.php` - Index all products
+- `GetSimilarProducts.php` - Get similar products by ID or query
+- `ClearCollection.php` - Clear all embeddings
+- `GetPersonalizedRecommendations.php` - Get personalized recommendations
+- `RefreshProfiles.php` - Refresh customer profiles
+
+#### Configuration
+- **`etc/di.xml`** - Dependency injection configuration
+- **`etc/config.xml`** - Default module configuration values
+- **`etc/adminhtml/system.xml`** - Admin configuration structure
+- **`etc/webapi.xml`** - REST API endpoint definitions
+- **`etc/db_schema.xml`** - Database table definitions
 
 ## Technical Details
 
@@ -349,6 +523,102 @@ For issues, questions, or contributions:
 - Review `docs/LOCAL_INSTALLATION.md` for detailed setup instructions
 - Enable debug mode and check logs at `var/log/product_recommendation.log`
 
+## Personalized Recommendations (v2.0.0)
+
+### Overview
+
+Version 2.0.0 introduces **AI-powered personalized recommendations** based on customer behavior. The module now tracks and analyzes:
+
+- **Browsing History**: Products the customer has viewed
+- **Purchase History**: Products the customer has bought
+- **Wishlist**: Products saved to wishlist
+
+### New Recommendation Types
+
+| Type | Description | Data Source | Guest Support |
+|------|-------------|-------------|---------------|
+| **Inspired by Browsing** | Products similar to what customer has viewed | `report_viewed_product_index` + session | ✅ Yes |
+| **Based on Past Purchases** | Complementary products to purchases | `sales_order_item` | ❌ No |
+| **Inspired by Wishlist** | Products similar to wishlist items | `wishlist_item` | ❌ No |
+| **Just For You** | Combined weighted recommendations | All sources | Partial |
+
+### How It Works
+
+1. **Behavior Collection**: Customer actions (views, purchases, wishlist adds) are tracked
+2. **Profile Generation**: Product embeddings are averaged to create a customer profile vector
+3. **Similarity Search**: ChromaDB finds products similar to the customer profile
+4. **Weighted Scoring**: "Just For You" combines all behavior with configurable weights:
+   - Wishlist: 40% (highest purchase intent)
+   - Purchases: 35% (proven preferences)
+   - Browsing: 25% (interest exploration)
+
+### CLI Commands
+
+```bash
+# Get personalized recommendations for a customer
+bin/magento recommendation:personalized 123 --type=just_for_you --limit=10
+
+# Refresh customer profiles
+bin/magento recommendation:refresh-profiles 123
+bin/magento recommendation:refresh-profiles --all --stale=24
+```
+
+### REST API Endpoints
+
+```
+GET /V1/recommendation/personalized/browsing
+GET /V1/recommendation/personalized/purchase
+GET /V1/recommendation/personalized/wishlist
+GET /V1/recommendation/personalized/justforyou
+GET /V1/recommendation/personalized/guest/browsing
+```
+
+### GraphQL Query
+
+```graphql
+query {
+  personalizedRecommendations(type: JUST_FOR_YOU, limit: 8) {
+    items {
+      product {
+        name
+        sku
+        price_range { ... }
+      }
+      score
+      position
+    }
+    total_count
+    has_data
+  }
+}
+```
+
+### Widget
+
+A CMS widget "AI Personalized Recommendations" is available for placement anywhere in your store via Content > Widgets.
+
+### Admin Configuration
+
+Navigate to **Stores > Configuration > Navindbhudiya > AI Product Recommendation > Personalized Recommendations**:
+
+- Enable/disable each recommendation type
+- Set product limits
+- Configure weights for "Just For You" calculation
+- Choose which pages to display on
+
+### Database Tables
+
+| Table | Purpose |
+|-------|---------|
+| `ai_customer_profile` | Stores customer behavior profile embeddings |
+| `ai_personalized_recommendations` | Cached personalized recommendations |
+| `ai_guest_browsing_history` | Session-based guest browsing history |
+
+### Cron Jobs
+
+- **Refresh Profiles**: Runs every 6 hours to refresh stale customer profiles
+- **Cleanup**: Removes expired cache entries and old guest browsing history
+
 ## License
 
 MIT License - See module files for details.
@@ -361,7 +631,7 @@ MIT License - See module files for details.
 
 ---
 
-**Version**: 1.0.0
+**Version**: 2.1.0
 **Magento**: 2.4.x
 **ChromaDB**: 0.4.24
 **PHP**: 8.1+

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ * Widget Configuration
+ */
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+
+    <widget id="personalized_recommendations"
+            class="Navindbhudiya\ProductRecommendation\Block\Widget\PersonalizedRecommendations"
+            placeholder_image="Navindbhudiya_ProductRecommendation::images/widget_placeholder.png">
+        <label translate="true">AI Personalized Recommendations</label>
+        <description translate="true">Display AI-powered personalized product recommendations based on customer behavior</description>
+        
+        <parameters>
+            <parameter name="recommendation_type" xsi:type="select" required="true" visible="true" sort_order="10">
+                <label translate="true">Recommendation Type</label>
+                <description translate="true">Select the type of personalized recommendations to display</description>
+                <options>
+                    <option name="just_for_you" value="just_for_you" selected="true">
+                        <label translate="true">Just For You (Combined)</label>
+                    </option>
+                    <option name="browsing" value="browsing">
+                        <label translate="true">Inspired by Browsing</label>
+                    </option>
+                    <option name="purchase" value="purchase">
+                        <label translate="true">Based on Past Purchases</label>
+                    </option>
+                    <option name="wishlist" value="wishlist">
+                        <label translate="true">Inspired by Wishlist</label>
+                    </option>
+                </options>
+            </parameter>
+            
+            <parameter name="product_limit" xsi:type="text" required="false" visible="true" sort_order="20">
+                <label translate="true">Number of Products</label>
+                <description translate="true">Maximum number of products to display (default: 8)</description>
+                <value>8</value>
+            </parameter>
+            
+            <parameter name="title" xsi:type="text" required="false" visible="true" sort_order="30">
+                <label translate="true">Custom Title</label>
+                <description translate="true">Leave empty to use default title based on recommendation type</description>
+            </parameter>
+            
+            <parameter name="show_title" xsi:type="select" required="false" visible="true" sort_order="40">
+                <label translate="true">Show Title</label>
+                <options>
+                    <option name="yes" value="1" selected="true">
+                        <label translate="true">Yes</label>
+                    </option>
+                    <option name="no" value="0">
+                        <label translate="true">No</label>
+                    </option>
+                </options>
+            </parameter>
+            
+            <parameter name="css_class" xsi:type="text" required="false" visible="true" sort_order="50">
+                <label translate="true">Custom CSS Class</label>
+                <description translate="true">Add custom CSS class for styling</description>
+            </parameter>
+        </parameters>
+        
+        <containers>
+            <container name="content">
+                <template name="grid" value="default"/>
+            </container>
+            <container name="content.top">
+                <template name="grid" value="default"/>
+            </container>
+            <container name="content.bottom">
+                <template name="grid" value="default"/>
+            </container>
+            <container name="sidebar.main">
+                <template name="default" value="list"/>
+            </container>
+            <container name="sidebar.additional">
+                <template name="default" value="list"/>
+            </container>
+        </containers>
+    </widget>
+
+</widgets>

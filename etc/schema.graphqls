@@ -1,0 +1,26 @@
+type Query {
+    personalizedRecommendations(
+        type: PersonalizedRecommendationType!
+        limit: Int = 8
+    ): PersonalizedRecommendationsOutput @resolver(class: "Navindbhudiya\\ProductRecommendation\\Model\\Resolver\\PersonalizedRecommendations") @doc(description: "Get personalized AI product recommendations")
+}
+
+enum PersonalizedRecommendationType {
+    BROWSING @doc(description: "Recommendations based on browsing history")
+    PURCHASE @doc(description: "Recommendations based on purchase history")
+    WISHLIST @doc(description: "Recommendations based on wishlist")
+    JUST_FOR_YOU @doc(description: "Combined personalized recommendations")
+}
+
+type PersonalizedRecommendationsOutput {
+    items: [PersonalizedRecommendationItem] @doc(description: "List of recommended products")
+    total_count: Int @doc(description: "Total number of recommendations")
+    recommendation_type: String @doc(description: "Type of recommendation")
+    has_data: Boolean @doc(description: "Whether the customer has enough data for this recommendation type")
+}
+
+type PersonalizedRecommendationItem {
+    product: ProductInterface @doc(description: "Recommended product")
+    score: Float @doc(description: "Similarity score (0-1)")
+    position: Int @doc(description: "Position in recommendations")
+}

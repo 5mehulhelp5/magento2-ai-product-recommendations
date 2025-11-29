@@ -43,6 +43,23 @@
                 <enabled>1</enabled>
                 <lifetime>3600</lifetime>
             </cache>
+            <personalized>
+                <browsing_enabled>1</browsing_enabled>
+                <browsing_limit>8</browsing_limit>
+                <purchase_enabled>1</purchase_enabled>
+                <purchase_limit>8</purchase_limit>
+                <wishlist_enabled>1</wishlist_enabled>
+                <wishlist_limit>8</wishlist_limit>
+                <justforyou_enabled>1</justforyou_enabled>
+                <justforyou_limit>12</justforyou_limit>
+                <weight_wishlist>40</weight_wishlist>
+                <weight_purchase>35</weight_purchase>
+                <weight_browsing>25</weight_browsing>
+                <min_history_items>2</min_history_items>
+                <show_on_homepage>1</show_on_homepage>
+                <show_on_category>0</show_on_category>
+                <show_on_product>1</show_on_product>
+            </personalized>
         </product_recommendation>
     </default>
 </config>

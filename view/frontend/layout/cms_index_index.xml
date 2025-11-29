@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ * Homepage layout - adds all personalized recommendation sections
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    
+    <body>
+        <!-- Personalized Recommendations Container -->
+        <referenceContainer name="content.bottom">
+            
+            <!-- Recommended Just For You (Combined) -->
+            <block class="Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations"
+                   name="homepage.personalized.just.for.you"
+                   template="Navindbhudiya_ProductRecommendation::personalized/recommendations.phtml"
+                   before="-">
+                <arguments>
+                    <argument name="recommendation_type" xsi:type="string">just_for_you</argument>
+                    <argument name="product_limit" xsi:type="number">12</argument>
+                    <argument name="title" xsi:type="string" translate="true">Recommended Just For You</argument>
+                </arguments>
+            </block>
+            
+            <!-- Inspired by Your Browsing -->
+            <block class="Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations"
+                   name="homepage.personalized.browsing"
+                   template="Navindbhudiya_ProductRecommendation::personalized/recommendations.phtml"
+                   after="homepage.personalized.just.for.you">
+                <arguments>
+                    <argument name="recommendation_type" xsi:type="string">browsing</argument>
+                    <argument name="product_limit" xsi:type="number">8</argument>
+                    <argument name="title" xsi:type="string" translate="true">Inspired by Your Browsing</argument>
+                </arguments>
+            </block>
+            
+            <!-- Based on Your Past Purchases -->
+            <block class="Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations"
+                   name="homepage.personalized.purchase"
+                   template="Navindbhudiya_ProductRecommendation::personalized/recommendations.phtml"
+                   after="homepage.personalized.browsing">
+                <arguments>
+                    <argument name="recommendation_type" xsi:type="string">purchase</argument>
+                    <argument name="product_limit" xsi:type="number">8</argument>
+                    <argument name="title" xsi:type="string" translate="true">Based on Your Past Purchases</argument>
+                </arguments>
+            </block>
+            
+            <!-- Inspired by Your Wishlist -->
+            <block class="Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations"
+                   name="homepage.personalized.wishlist"
+                   template="Navindbhudiya_ProductRecommendation::personalized/recommendations.phtml"
+                   after="homepage.personalized.purchase">
+                <arguments>
+                    <argument name="recommendation_type" xsi:type="string">wishlist</argument>
+                    <argument name="product_limit" xsi:type="number">8</argument>
+                    <argument name="title" xsi:type="string" translate="true">Inspired by Your Wishlist</argument>
+                </arguments>
+            </block>
+            
+        </referenceContainer>
+    </body>
+</page>

@@ -47,6 +47,23 @@ class Config extends AbstractHelper
     private const XML_PATH_CACHE_ENABLED = 'product_recommendation/cache/enabled';
     private const XML_PATH_CACHE_LIFETIME = 'product_recommendation/cache/lifetime';
 
+    // Personalized Recommendations
+    private const XML_PATH_PERSONALIZED_BROWSING_ENABLED = 'product_recommendation/personalized/browsing_enabled';
+    private const XML_PATH_PERSONALIZED_BROWSING_LIMIT = 'product_recommendation/personalized/browsing_limit';
+    private const XML_PATH_PERSONALIZED_PURCHASE_ENABLED = 'product_recommendation/personalized/purchase_enabled';
+    private const XML_PATH_PERSONALIZED_PURCHASE_LIMIT = 'product_recommendation/personalized/purchase_limit';
+    private const XML_PATH_PERSONALIZED_WISHLIST_ENABLED = 'product_recommendation/personalized/wishlist_enabled';
+    private const XML_PATH_PERSONALIZED_WISHLIST_LIMIT = 'product_recommendation/personalized/wishlist_limit';
+    private const XML_PATH_PERSONALIZED_JUSTFORYOU_ENABLED = 'product_recommendation/personalized/justforyou_enabled';
+    private const XML_PATH_PERSONALIZED_JUSTFORYOU_LIMIT = 'product_recommendation/personalized/justforyou_limit';
+    private const XML_PATH_PERSONALIZED_WEIGHT_WISHLIST = 'product_recommendation/personalized/weight_wishlist';
+    private const XML_PATH_PERSONALIZED_WEIGHT_PURCHASE = 'product_recommendation/personalized/weight_purchase';
+    private const XML_PATH_PERSONALIZED_WEIGHT_BROWSING = 'product_recommendation/personalized/weight_browsing';
+    private const XML_PATH_PERSONALIZED_MIN_HISTORY = 'product_recommendation/personalized/min_history_items';
+    private const XML_PATH_PERSONALIZED_SHOW_HOMEPAGE = 'product_recommendation/personalized/show_on_homepage';
+    private const XML_PATH_PERSONALIZED_SHOW_CATEGORY = 'product_recommendation/personalized/show_on_category';
+    private const XML_PATH_PERSONALIZED_SHOW_PRODUCT = 'product_recommendation/personalized/show_on_product';
+
     /**
      * @var EncryptorInterface
      */
@@ -332,5 +349,237 @@ class Config extends AbstractHelper
     public function getCacheLifetime(): int
     {
         return (int) ($this->scopeConfig->getValue(self::XML_PATH_CACHE_LIFETIME) ?: 3600);
+    }
+
+    // ==========================================
+    // Personalized Recommendations Configuration
+    // ==========================================
+
+    /**
+     * Check if browsing-based recommendations are enabled
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isBrowsingRecommendationsEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_BROWSING_ENABLED,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Get browsing recommendations limit
+     *
+     * @param int|null $storeId
+     * @return int
+     */
+    public function getBrowsingRecommendationsLimit(?int $storeId = null): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_BROWSING_LIMIT,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 8;
+    }
+
+    /**
+     * Check if purchase-based recommendations are enabled
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isPurchaseRecommendationsEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_PURCHASE_ENABLED,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Get purchase recommendations limit
+     *
+     * @param int|null $storeId
+     * @return int
+     */
+    public function getPurchaseRecommendationsLimit(?int $storeId = null): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_PURCHASE_LIMIT,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 8;
+    }
+
+    /**
+     * Check if wishlist-based recommendations are enabled
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isWishlistRecommendationsEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_WISHLIST_ENABLED,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Get wishlist recommendations limit
+     *
+     * @param int|null $storeId
+     * @return int
+     */
+    public function getWishlistRecommendationsLimit(?int $storeId = null): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_WISHLIST_LIMIT,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 8;
+    }
+
+    /**
+     * Check if "Just For You" recommendations are enabled
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function isJustForYouEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_JUSTFORYOU_ENABLED,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Get "Just For You" recommendations limit
+     *
+     * @param int|null $storeId
+     * @return int
+     */
+    public function getJustForYouLimit(?int $storeId = null): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_JUSTFORYOU_LIMIT,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 12;
+    }
+
+    /**
+     * Get wishlist weight for combined recommendations
+     *
+     * @param int|null $storeId
+     * @return float
+     */
+    public function getWishlistWeight(?int $storeId = null): float
+    {
+        $weight = (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_WEIGHT_WISHLIST,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 40;
+        return $weight / 100;
+    }
+
+    /**
+     * Get purchase weight for combined recommendations
+     *
+     * @param int|null $storeId
+     * @return float
+     */
+    public function getPurchaseWeight(?int $storeId = null): float
+    {
+        $weight = (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_WEIGHT_PURCHASE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 35;
+        return $weight / 100;
+    }
+
+    /**
+     * Get browsing weight for combined recommendations
+     *
+     * @param int|null $storeId
+     * @return float
+     */
+    public function getBrowsingWeight(?int $storeId = null): float
+    {
+        $weight = (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_WEIGHT_BROWSING,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 25;
+        return $weight / 100;
+    }
+
+    /**
+     * Get minimum history items required for personalization
+     *
+     * @param int|null $storeId
+     * @return int
+     */
+    public function getMinHistoryItems(?int $storeId = null): int
+    {
+        return (int) $this->scopeConfig->getValue(
+            self::XML_PATH_PERSONALIZED_MIN_HISTORY,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        ) ?: 2;
+    }
+
+    /**
+     * Check if personalized recommendations should show on homepage
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function showOnHomepage(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_SHOW_HOMEPAGE,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Check if personalized recommendations should show on category pages
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function showOnCategory(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_SHOW_CATEGORY,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
+    /**
+     * Check if personalized recommendations should show on product pages
+     *
+     * @param int|null $storeId
+     * @return bool
+     */
+    public function showOnProduct(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_PERSONALIZED_SHOW_PRODUCT,
+            ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 }

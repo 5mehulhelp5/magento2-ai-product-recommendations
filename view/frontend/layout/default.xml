@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ * Default layout - adds personalized recommendations to all pages
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    
+    <head>
+        <css src="Navindbhudiya_ProductRecommendation::css/personalized.css"/>
+    </head>
+    
+    <body>
+        <!-- Just For You - Bottom of page content -->
+        <referenceContainer name="content.bottom">
+            <block class="Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations"
+                   name="personalized.just.for.you"
+                   template="Navindbhudiya_ProductRecommendation::personalized/recommendations.phtml"
+                   after="-">
+                <arguments>
+                    <argument name="recommendation_type" xsi:type="string">just_for_you</argument>
+                    <argument name="product_limit" xsi:type="number">8</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
+</page>

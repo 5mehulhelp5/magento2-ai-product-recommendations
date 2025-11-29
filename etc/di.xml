@@ -28,6 +28,15 @@
     <preference for="Navindbhudiya\ProductRecommendation\Api\Data\RecommendationResultInterface"
                 type="Navindbhudiya\ProductRecommendation\Model\Data\RecommendationResult"/>
 
+    <preference for="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationInterface"
+                type="Navindbhudiya\ProductRecommendation\Service\PersonalizedRecommendationService"/>
+
+    <preference for="Navindbhudiya\ProductRecommendation\Api\Data\CustomerProfileInterface"
+                type="Navindbhudiya\ProductRecommendation\Model\Data\CustomerProfile"/>
+
+    <preference for="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface"
+                type="Navindbhudiya\ProductRecommendation\Model\PersonalizedRecommendationManagement"/>
+
     <!-- Embedding Provider Pool -->
     <type name="Navindbhudiya\ProductRecommendation\Service\Embedding\EmbeddingProviderFactory">
         <arguments>
@@ -65,6 +74,48 @@
         </arguments>
     </type>
 
+    <type name="Navindbhudiya\ProductRecommendation\Service\PersonalizedRecommendationService">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Service\BehaviorCollector\BrowsingHistoryCollector">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Service\BehaviorCollector\PurchaseHistoryCollector">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Service\BehaviorCollector\WishlistCollector">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Observer\ProductViewTracker">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Observer\CustomerLoginRefresh">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
+    <type name="Navindbhudiya\ProductRecommendation\Cron\RefreshCustomerProfiles">
+        <arguments>
+            <argument name="logger" xsi:type="object">Navindbhudiya\ProductRecommendation\Logger\Logger</argument>
+        </arguments>
+    </type>
+
     <!-- CLI Commands -->
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
@@ -73,6 +124,8 @@
                 <item name="recommendation_test" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\TestConnection</item>
                 <item name="recommendation_similar" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\GetSimilarProducts</item>
                 <item name="recommendation_clear" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\ClearCollection</item>
+                <item name="recommendation_personalized" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\GetPersonalizedRecommendations</item>
+                <item name="recommendation_refresh_profiles" xsi:type="object">Navindbhudiya\ProductRecommendation\Console\Command\RefreshProfiles</item>
             </argument>
         </arguments>
     </type>

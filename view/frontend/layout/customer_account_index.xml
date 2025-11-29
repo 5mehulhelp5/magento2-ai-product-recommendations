@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ * Customer account dashboard - personalized recommendations
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    
+    <body>
+        <referenceContainer name="content">
+            
+            <!-- Just For You on Dashboard -->
+            <block class="Navindbhudiya\ProductRecommendation\Block\Personalized\Recommendations"
+                   name="customer.dashboard.personalized"
+                   template="Navindbhudiya_ProductRecommendation::personalized/recommendations.phtml"
+                   after="customer_account_dashboard">
+                <arguments>
+                    <argument name="recommendation_type" xsi:type="string">just_for_you</argument>
+                    <argument name="product_limit" xsi:type="number">8</argument>
+                    <argument name="title" xsi:type="string" translate="true">Recommended Just For You</argument>
+                </arguments>
+            </block>
+            
+        </referenceContainer>
+    </body>
+</page>

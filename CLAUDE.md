@@ -255,3 +255,5 @@ product_recommendation/embedding/provider     # default: chromadb
 - `Service/Embedding/ChromaDBEmbeddingProvider.php` - Calls embedding-service
 - `Model/Indexer/ProductEmbedding.php` - Indexes products with embeddings
 - `docker/embedding-service/app.py` - Python Flask embedding service
+
+## never run any warden command just share the instruction and if required to run then confirm first.

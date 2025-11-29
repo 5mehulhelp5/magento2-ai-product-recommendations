@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ * REST API Configuration
+ */
+-->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <!-- Get browsing-inspired recommendations -->
+    <route url="/V1/recommendation/personalized/browsing" method="GET">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="getBrowsingInspired"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+        <data>
+            <parameter name="customerId" force="true">%customer_id%</parameter>
+        </data>
+    </route>
+
+    <!-- Get purchase-inspired recommendations -->
+    <route url="/V1/recommendation/personalized/purchase" method="GET">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="getPurchaseInspired"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+        <data>
+            <parameter name="customerId" force="true">%customer_id%</parameter>
+        </data>
+    </route>
+
+    <!-- Get wishlist-inspired recommendations -->
+    <route url="/V1/recommendation/personalized/wishlist" method="GET">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="getWishlistInspired"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+        <data>
+            <parameter name="customerId" force="true">%customer_id%</parameter>
+        </data>
+    </route>
+
+    <!-- Get "Just For You" combined recommendations -->
+    <route url="/V1/recommendation/personalized/justforyou" method="GET">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="getJustForYou"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+        <data>
+            <parameter name="customerId" force="true">%customer_id%</parameter>
+        </data>
+    </route>
+
+    <!-- Guest browsing recommendations (session-based) -->
+    <route url="/V1/recommendation/personalized/guest/browsing" method="GET">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="getGuestBrowsingInspired"/>
+        <resources>
+            <resource ref="anonymous"/>
+        </resources>
+    </route>
+
+    <!-- Admin: Get recommendations for any customer -->
+    <route url="/V1/recommendation/personalized/customer/:customerId/:type" method="GET">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="getCustomerRecommendations"/>
+        <resources>
+            <resource ref="Navindbhudiya_ProductRecommendation::recommendation"/>
+        </resources>
+    </route>
+
+    <!-- Admin: Refresh customer profile -->
+    <route url="/V1/recommendation/personalized/refresh/:customerId" method="POST">
+        <service class="Navindbhudiya\ProductRecommendation\Api\PersonalizedRecommendationManagementInterface" method="refreshCustomerProfile"/>
+        <resources>
+            <resource ref="Navindbhudiya_ProductRecommendation::recommendation"/>
+        </resources>
+    </route>
+
+</routes>

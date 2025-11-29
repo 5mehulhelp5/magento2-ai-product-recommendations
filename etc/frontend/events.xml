@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Navindbhudiya ProductRecommendation
+ * Frontend events for personalized recommendations
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+
+    <!-- Track product views for browsing history -->
+    <event name="catalog_controller_product_view">
+        <observer name="product_recommendation_track_view"
+                  instance="Navindbhudiya\ProductRecommendation\Observer\ProductViewTracker"/>
+    </event>
+
+    <!-- Refresh profiles on customer login -->
+    <event name="customer_login">
+        <observer name="product_recommendation_customer_login_refresh"
+                  instance="Navindbhudiya\ProductRecommendation\Observer\CustomerLoginRefresh"/>
+    </event>
+
+</config>
